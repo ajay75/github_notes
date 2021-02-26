@@ -1,0 +1,37 @@
+image:
+  repository: atlassian/bamboo-server
+  tag: 7.2
+  pullPolicy: IfNotPresent
+
+bamboo-server:
+  reverseProxyHost: bamboo-server.minikube.local 
+  reverseProxyPort: 80
+  reverseProxyScheme: http
+  baseURL: http://bamboo-server.minikube.local
+  license: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  path: /
+  hosts:
+    - bamboo-server.minikube.local
+#  tls: []
+#  - secreName: wildcard
+#    hosts:
+#    - bamboo-server.example.com
+#    
+ 
+#Chart assumes you're using postgres and that the DB has already been deployed. 
+postgres:
+  dbUrl: ""
+  username: ""
+  password: ""
+
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+  size: 8Gi

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bamboo-agent-base
+  namespace: atlassian-bamboo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bamboo-agent-base
+  template:
+    metadata:
+      labels:
+        app: bamboo-agent-base
+    spec:
+      initContainers:
+        - name: "init-chown-data"
+          image: busybox:latest
+          imagePullPolicy: Always
+          command: ["/bin/sh","-c"]
+          args: ["chown -R  65534:65534 /home/bamboo/bamboo-agent-home; chmod -R 777 /home/bamboo/bamboo-agent-home"]
+          volumeMounts:
+            - name: bamboo-agent-home
+              mountPath: /home/bamboo/bamboo-agent-home
+              subPath: ""
+      containers:
+        - name: bamboo-agent-base
+          image: ajay75/bamboo-agent
+          imagePullPolicy: Always
+          env:
+          - name: JVM_MINIMUM_MEMORY
+            value: 2048m
+          - name: JVM_MAXIMUM_MEMORY
+            value: 2048m
+          volumeMounts:
+          - name: bamboo-agent-home
+            mountPath: /home/bamboo/bamboo-agent-home
+      volumes:
+      - name: bamboo-agent-home
+        persistentVolumeClaim:
+          claimName: bamboo-agent-home

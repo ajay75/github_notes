@@ -1,0 +1,24 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "atlassian-bamboo.fullname" . -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    app: {{ template "atlassian-bamboo.name" . }}
+    chart: {{ template "atlassian-bamboo.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  rules:
+   - host: bamboo-server.minikube.local
+     http:
+       paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ $fullName }}
+              port:
+                number: 80
+     {{- end }}        

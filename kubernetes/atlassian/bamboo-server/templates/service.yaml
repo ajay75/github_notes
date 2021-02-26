@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "atlassian-bamboo.fullname" . }}
+  labels:
+    app: {{ template "atlassian-bamboo.name" . }}
+    chart: {{ template "atlassian-bamboo.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    app: {{ template "atlassian-bamboo.name" . }}
+  ports:
+  - name: http
+    protocol: TCP
+    port: {{ .Values.service.port }}
+    targetPort: 8085

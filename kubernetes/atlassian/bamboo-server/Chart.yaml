@@ -1,0 +1,9 @@
+apiVersion: v2
+name: atlassian-bamboo
+appVersion: "1.0"
+description: Build server
+keywords: 
+  - atlassian
+  - bamboo
+version: 0.1.0
+type: application

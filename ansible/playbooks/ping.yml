@@ -1,0 +1,8 @@
+# pinging all the target machines instance
+---
+- hosts: all
+  name: playbook-ping
+  tasks:
+    - name: Ping all the target machines for reachability
+      action: ping
+      

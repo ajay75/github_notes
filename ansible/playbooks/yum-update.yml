@@ -1,0 +1,10 @@
+# update the OS on target machine
+---
+- hosts: webservers:loadbalancers
+  name: playbook-update
+  become: yes
+  tasks:
+    - name: update the os
+      yum: name=* state=latest
+
+  

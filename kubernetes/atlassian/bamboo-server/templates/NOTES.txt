@@ -1,0 +1,10 @@
+Atlassian Bamboo-Server is starting now.
+It takes a few minutes to bootstrap a container.
+
+{{- if .Values.ingress.enabled }}
+1. Open the Bamboo-server URL:
+{{- range .Values.ingress.hosts }}
+  http://{{ . }}
+{{- end }}
+
+{{- end }}

@@ -1,0 +1,9 @@
+# get the target machines OS Type
+---
+- hosts: all
+  name: playbook-uname
+  tasks:
+    - name: Get the OS Type of target machine
+      shell: uname -a
+      
+      

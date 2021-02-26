@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "atlassian-bamboo.fullname" . }}
+  labels:
+    app: {{ template "atlassian-bamboo.name" . }}
+    chart: {{ template "atlassian-bamboo.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ template "atlassian-bamboo.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "atlassian-bamboo.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      initContainers:
+      - name: "init-chown-data"
+        image: busybox:latest
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["/bin/sh","-c"]
+        args: ["chown -R  65534:65534 /var/atlassian/application-data/bamboo; chmod -R 777 /var/atlassian/application-data/bamboo"]
+        volumeMounts:
+        - name: bamboo-data
+          mountPath: /var/atlassian/application-data/bamboo
+          subPath: ""
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: JVM_MINIMUM_MEMORY
+          value: 2048m
+        - name: JVM_MAXIMUM_MEMORY
+          value: 2048m
+        volumeMounts:
+        - name: bamboo-data
+          mountPath: /var/atlassian/application-data/bamboo
+        - name: bamboo-logs
+          mountPath: /opt/atlassian/bamboo/logs
+        ports:
+        - containerPort: 8085
+          name: http
+          protocol: TCP
+        - containerPort: 54663
+          name: ssh
+          protocol: TCP
+        livenessProbe:
+          failureThreshold: 3
+          tcpSocket:
+            port: 8085
+          initialDelaySeconds: 120
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 5
+        readinessProbe:
+          failureThreshold: 3
+          tcpSocket:
+            port: 8085
+          initialDelaySeconds: 120
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+            requests:
+              memory: 1.5Gi
+      volumes:
+      - name: bamboo-logs
+        emptyDir: {}
+      - name: bamboo-data
+        persistentVolumeClaim:
+          claimName: bamboo-data
