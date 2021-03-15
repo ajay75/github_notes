@@ -16,7 +16,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
  name: nginx
-spec:
+spec:ku
  rules:
   - host: nginx.local
     http:
